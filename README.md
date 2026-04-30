@@ -19,3 +19,9 @@ Compile and run:
 g++ -std=c++17 main.cpp -O2 -o meetsync
 ./meetsync
 ```
+
+## Features
+
+- CLI menu to add and view meetings
+- Greedy scheduler to maximize non-overlapping meetings
+- Human-readable times and conflict reporting
