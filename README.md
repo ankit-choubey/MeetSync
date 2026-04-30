@@ -25,3 +25,6 @@ g++ -std=c++17 main.cpp -O2 -o meetsync
 - CLI menu to add and view meetings
 - Greedy scheduler to maximize non-overlapping meetings
 - Human-readable times and conflict reporting
+
+
+![Build](https://img.shields.io/badge/build-passing-brightgreen)
