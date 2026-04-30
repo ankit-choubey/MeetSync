@@ -185,7 +185,7 @@ void runScheduler() {
     cout << "  Total Meetings Requested : " << meetings.size() << "\n\n";
 
     cout << "  ✅ SCHEDULED:\n";
-    for (auto &m : scheduled) {
+    for (const auto &m : scheduled) {
         cout << "    [" << setw(2) << m.id << "] "
              << left << setw(22) << m.name
              << "| " << toTime(m.start) << " - " << toTime(m.end) << "\n";
@@ -193,7 +193,7 @@ void runScheduler() {
 
     if (!rejected.empty()) {
         cout << "\n  ❌ REJECTED (Conflicts):\n";
-        for (auto &m : rejected) {
+        for (const auto &m : rejected) {
             cout << "    [" << setw(2) << m.id << "] "
                  << left << setw(22) << m.name
                  << "| " << toTime(m.start) << " - " << toTime(m.end)
