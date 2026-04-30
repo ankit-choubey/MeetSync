@@ -6,23 +6,16 @@
  ╚═══════════════════════════════════════════════╝
 
  HOW GREEDY WORKS HERE:
-   1. Sort all meetings by their END time (earliest ending first)
-   2. Go through each meeting one by one
-   3. If it doesn't overlap with the last picked meeting → pick it
-   4. If it overlaps → reject it
-   WHY IS THIS OPTIMAL?
-   Picking the earliest-ending meeting always leaves maximum
-   room for future meetings. This is the Greedy Choice Property.
+   1. Sort all meetings by their END time
+   2. Go one by one — if no overlap with last picked → take it
+   3. If overlap → reject it
+   WHY OPTIMAL? Earliest-ending meeting leaves most room
+   for future meetings. This is the Greedy Choice Property.
 */
 
 #include <iostream>
-#include <vector>
-#include <string>
 #include <algorithm>
-#include <iomanip>
-#include <limits>
-#include <cstdio>
-#include <cstdlib>
+#include <string>
 using namespace std;
 
 // ─────────────────────────────────────────
@@ -31,63 +24,79 @@ using namespace std;
 struct Meeting {
     int    id;
     string name;
-    int    start;   // stored in minutes (e.g. 09:30 → 570)
+    int    start;   // in minutes e.g. 09:30 → 570
     int    end;
 };
 
-vector<Meeting> meetings;
+const int MAX = 50;
+Meeting meetings[MAX];
+int total  = 0;
 int nextId = 1;
 
 // ─────────────────────────────────────────
-//  Time Helpers
+//  Helpers
 // ─────────────────────────────────────────
 
-// "09:30"  →  570  (minutes from midnight)
+// "09:30" → 570
 int toMin(const string &t) {
-    return stoi(t.substr(0, 2)) * 60 + stoi(t.substr(3, 2));
+    return (t[0]-'0')*600 + (t[1]-'0')*60
+         + (t[3]-'0')*10  + (t[4]-'0');
 }
 
-// 570  →  "09:30"
+// 570 → "09:30"
 string toTime(int m) {
-    char buf[6];
-    snprintf(buf, sizeof(buf), "%02d:%02d", m / 60, m % 60);
-    return buf;
+    int h = m / 60, mn = m % 60;
+    string s = "  :  ";
+    s[0] = '0' + h  / 10;
+    s[1] = '0' + h  % 10;
+    s[3] = '0' + mn / 10;
+    s[4] = '0' + mn % 10;
+    return s;
+}
+
+// pad string to fixed width (replaces setw)
+string pad(string s, int width) {
+    while ((int)s.size() < width) s += ' ';
+    return s;
+}
+
+void printLine() {
+    cout << "====================================================\n";
 }
 
 // ─────────────────────────────────────────
-//  Print helpers
+//  Compare function for sort (by end time)
 // ─────────────────────────────────────────
-void printLine() {
-    cout << string(52, '=') << "\n";
+bool byEndTime(const Meeting &a, const Meeting &b) {
+    return a.end < b.end;
 }
 
 // ─────────────────────────────────────────
 //  Option 1 — Load Sample Data
 // ─────────────────────────────────────────
 void loadSample() {
-    meetings.clear();   // reset so calling twice doesn't duplicate
+    total  = 0;
     nextId = 1;
 
-    meetings = {
-        {nextId++, "Team Standup",    toMin("09:00"), toMin("10:00")},
-        {nextId++, "Design Sync",     toMin("09:30"), toMin("11:00")},
-        {nextId++, "Client Review",   toMin("10:30"), toMin("11:30")},
-        {nextId++, "Lunch Meeting",   toMin("10:00"), toMin("12:00")},
-        {nextId++, "Sprint Planning", toMin("12:00"), toMin("13:00")},
-        {nextId++, "Team Retro",      toMin("13:00"), toMin("14:00")},
-    };
-    cout << "  ✅ Sample data loaded (6 meetings).\n";
+    meetings[total++] = {nextId++, "Team Standup",    toMin("09:00"), toMin("10:00")};
+    meetings[total++] = {nextId++, "Design Sync",     toMin("09:30"), toMin("11:00")};
+    meetings[total++] = {nextId++, "Client Review",   toMin("10:30"), toMin("11:30")};
+    meetings[total++] = {nextId++, "Lunch Meeting",   toMin("10:00"), toMin("12:00")};
+    meetings[total++] = {nextId++, "Sprint Planning", toMin("12:00"), toMin("13:00")};
+    meetings[total++] = {nextId++, "Team Retro",      toMin("13:00"), toMin("14:00")};
+
+    cout << "  Sample data loaded (6 meetings).\n";
 }
 
 // ─────────────────────────────────────────
 //  Option 2 — Add a Meeting
 // ─────────────────────────────────────────
 void addMeeting() {
+    if (total >= MAX) { cout << "  List full!\n"; return; }
+
     Meeting m;
     string s, e;
-
-    // flush leftover newline from previous cin >> so getline works
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cin.ignore(1000, '\n');
 
     cout << "  Meeting name  : "; getline(cin, m.name);
     cout << "  Start (HH:MM) : "; cin >> s;
@@ -97,41 +106,36 @@ void addMeeting() {
     m.end   = toMin(e);
 
     if (m.end <= m.start) {
-        cout << "  ⚠  End time must be after start time!\n";
-        return;
+        cout << "  End must be after start!\n"; return;
     }
-
-    // warn if exact same time slot already exists
-    for (auto &x : meetings) {
-        if (x.start == m.start && x.end == m.end) {
-            cout << "  ⚠  A meeting with the same time slot already exists!\n";
-            return;
+    for (int i = 0; i < total; i++) {
+        if (meetings[i].start == m.start && meetings[i].end == m.end) {
+            cout << "  Same time slot already exists!\n"; return;
         }
     }
 
     m.id = nextId++;
-    meetings.push_back(m);
-    cout << "  ✅ Meeting \"" << m.name << "\" added!\n";
+    meetings[total++] = m;
+    cout << "  Meeting \"" << m.name << "\" added!\n";
 }
 
 // ─────────────────────────────────────────
 //  Option 3 — View All Meetings
 // ─────────────────────────────────────────
 void viewMeetings() {
-    if (meetings.empty()) {
-        cout << "  No meetings added yet.\n";
-        return;
+    if (total == 0) { cout << "  No meetings yet.\n"; return; }
+
+    printLine();
+    cout << "  ID   NAME                     TIME\n";
+    printLine();
+    for (int i = 0; i < total; i++) {
+        cout << "  [" << meetings[i].id << "]  "
+             << pad(meetings[i].name, 24)
+             << toTime(meetings[i].start) << " - "
+             << toTime(meetings[i].end) << "\n";
     }
     printLine();
-    cout << "  ID    NAME                    TIME\n";
-    printLine();
-    for (auto &m : meetings) {
-        cout << "  [" << setw(2) << m.id << "]  "
-             << left << setw(24) << m.name
-             << toTime(m.start) << " - " << toTime(m.end) << "\n";
-    }
-    printLine();
-    cout << "  Total: " << meetings.size() << " meeting(s)\n";
+    cout << "  Total: " << total << " meeting(s)\n";
     printLine();
 }
 
@@ -139,71 +143,69 @@ void viewMeetings() {
 //  Option 4 — Run Greedy Scheduler
 // ─────────────────────────────────────────
 void runScheduler() {
-    if (meetings.empty()) {
-        cout << "  No meetings to schedule. Add some first!\n";
-        return;
-    }
+    if (total == 0) { cout << "  No meetings to schedule.\n"; return; }
 
-    // ── GREEDY STEP 1: Sort by end time ───────────
-    cout << "\n  [Greedy] Step 1: Sorting " << meetings.size()
+    // ── GREEDY STEP 1: Copy and sort by end time ──
+    cout << "\n  [Greedy] Step 1: Sorting " << total
          << " meetings by end time...\n";
-    vector<Meeting> sorted = meetings;
-    sort(sorted.begin(), sorted.end(), [](const Meeting &a, const Meeting &b) {
-        return a.end < b.end;   // earliest ending first
-    });
+
+    Meeting sorted[MAX];
+    for (int i = 0; i < total; i++) sorted[i] = meetings[i];
+    sort(sorted, sorted + total, byEndTime);
 
     // ── GREEDY STEP 2: Pick non-overlapping meetings ──
     cout << "  [Greedy] Step 2: Picking meetings greedily...\n\n";
 
-    vector<Meeting> scheduled, rejected;
-    int lastEnd = -1;   // end time of last scheduled meeting
+    Meeting scheduled[MAX], rejected[MAX];
+    int schedCount = 0, rejCount = 0;
+    int lastEnd = -1;
 
-    for (auto &m : sorted) {
-        if (m.start >= lastEnd) {
-            // no overlap → schedule it
-            scheduled.push_back(m);
-            lastEnd = m.end;
+    for (int i = 0; i < total; i++) {
+        if (sorted[i].start >= lastEnd) {
+            scheduled[schedCount++] = sorted[i];  // no overlap → pick it
+            lastEnd = sorted[i].end;
         } else {
-            // overlaps with last picked → reject
-            rejected.push_back(m);
+            rejected[rejCount++] = sorted[i];     // overlap → reject
         }
     }
 
-    // ── Find which scheduled meeting each rejected one conflicts with ──
-    // Determine which scheduled meeting a rejected one conflicts with
+    // ── Find which meeting each rejected one conflicts with ──
     auto findConflict = [&](const Meeting &r) -> string {
-        for (auto &s : scheduled)
-            if (r.start < s.end && r.end > s.start)
-                return s.name;
+        for (int i = 0; i < schedCount; i++)
+            if (r.start < scheduled[i].end && r.end > scheduled[i].start)
+                return scheduled[i].name;
         return "another meeting";
     };
 
-    // ── OUTPUT ────────────────────────────────────────
+    // ── OUTPUT ────────────────────────────────
     cout << "\n";
     printLine();
     cout << "  MEETSYNC — MEETING SCHEDULER RESULT\n";
     printLine();
-    cout << "  Total Meetings Requested : " << meetings.size() << "\n\n";
+    cout << "  Total Meetings Requested : " << total << "\n\n";
 
-    cout << "  ✅ SCHEDULED:\n";
-    for (const auto &m : scheduled) {
-        cout << "    [" << setw(2) << m.id << "] "
-             << left << setw(22) << m.name
-             << "| " << toTime(m.start) << " - " << toTime(m.end) << "\n";
+    cout << "  SCHEDULED:\n";
+    for (int i = 0; i < schedCount; i++) {
+        cout << "    [" << scheduled[i].id << "] "
+             << pad(scheduled[i].name, 22)
+             << "| " << toTime(scheduled[i].start)
+             << " - " << toTime(scheduled[i].end) << "\n";
     }
 
-    if (!rejected.empty()) {
-        cout << "\n  ❌ REJECTED (Conflicts):\n";
-        for (const auto &m : rejected) {
-            cout << "    [" << setw(2) << m.id << "] "
-                 << left << setw(22) << m.name
-                 << "| " << toTime(m.start) << " - " << toTime(m.end)
-                 << "  <- overlaps with \"" << findConflict(m) << "\"\n";
+    if (rejCount > 0) {
+        cout << "\n  REJECTED (Conflicts):\n";
+        for (int i = 0; i < rejCount; i++) {
+            cout << "    [" << rejected[i].id << "] "
+                 << pad(rejected[i].name, 22)
+                 << "| " << toTime(rejected[i].start)
+                 << " - " << toTime(rejected[i].end)
+                 << "  <- overlaps with \""
+                 << findConflict(rejected[i]) << "\"\n";
         }
     }
 
     printLine();
-    cout << "  Max meetings in a day : " << scheduled.size() << "\n";
+    cout << "  Max meetings in a day : " << schedCount << "\n";
     printLine();
 }
 
@@ -239,7 +241,7 @@ int main() {
         else if (ch == 2) addMeeting();
         else if (ch == 3) viewMeetings();
         else if (ch == 4) runScheduler();
-        else if (ch == 5) { cout << "  Goodbye! \n\n"; break; }
+        else if (ch == 5) { cout << "  Goodbye!\n\n"; break; }
         else              cout << "  Invalid option. Try 1-5.\n";
     }
 
