@@ -10,3 +10,12 @@
 - Ritin Nambiar
 - Ankit Choubey (Me)
 - Dhanush Dronagula
+
+## Quickstart
+
+Compile and run:
+
+```bash
+g++ -std=c++17 main.cpp -O2 -o meetsync
+./meetsync
+```
