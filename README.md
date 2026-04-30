@@ -32,3 +32,11 @@ g++ -std=c++17 main.cpp -O2 -o meetsync
 ## Example
 
 Run the sample flow: `./meetsync` then choose option 1 then 4.
+
+## Team Contacts
+
+- Vaibhav D
+- Srujan Kasturi
+- Ritin Nambiar
+- Ankit Choubey (owner)
+- Dhanush Dronagula
