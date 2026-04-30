@@ -28,3 +28,7 @@ g++ -std=c++17 main.cpp -O2 -o meetsync
 
 
 ![Build](https://img.shields.io/badge/build-passing-brightgreen)
+
+## Example
+
+Run the sample flow: `./meetsync` then choose option 1 then 4.
