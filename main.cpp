@@ -170,6 +170,7 @@ void runScheduler() {
     }
 
     // ── Find which scheduled meeting each rejected one conflicts with ──
+    // Determine which scheduled meeting a rejected one conflicts with
     auto findConflict = [&](const Meeting &r) -> string {
         for (auto &s : scheduled)
             if (r.start < s.end && r.end > s.start)
