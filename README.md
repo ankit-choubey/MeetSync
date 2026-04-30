@@ -41,3 +41,7 @@ Run the sample flow: `./meetsync` then choose option 1 then 4.
 - Ritin Nambiar
 - Ankit Choubey (owner)
 - Dhanush Dronagula
+
+---
+
+Project ready for development and CI.
