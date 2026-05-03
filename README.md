@@ -1,104 +1,85 @@
-<div align="center">
-
 # MeetSync
+
 ### **Smart. Greedy. Reliable.**
-*A lightweight C++ meeting scheduler built around classic activity selection.*
+*A high-performance, lightweight C++ meeting scheduler utilizing optimal activity selection logic.*
 
-[![C++](https://img.shields.io/badge/Language-C++17-00599C?style=for-the-badge&logo=c%2B%2B)](https://en.cppreference.com/w/cpp/17)
-[![CLI](https://img.shields.io/badge/Interface-CLI-111827?style=for-the-badge)](https://en.wikipedia.org/wiki/Command-line_interface)
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-macOS_%7C_Linux_%7C_Windows-lightgrey?style=for-the-badge)](https://github.com/ankit-choubey/MeetSync)
-
-</div>
+![C++](https://img.shields.io/badge/Language-C%2B%2B17-blue)
+![Interface](https://img.shields.io/badge/Interface-CLI-lightgrey)
+![License](https://img.shields.io/badge/License-MIT-green)
+![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey)
 
 ---
 
-## Mission Brief
-
-**MeetSync** is a compact meeting planner that helps you load, view, and schedule time blocks using a proven **greedy activity selection** approach.
-
-The focus is clarity over complexity: keep the interface simple, keep the logic deterministic, and keep the schedule conflict-free.
+## 🎯 Mission Brief
+**[MeetSync](https://github.com/ankit-choubey/MeetSync)** is a precision-engineered command-line utility designed to maximize productivity by resolving scheduling conflicts. Built with a focus on algorithmic efficiency, it provides a deterministic way to manage time blocks, ensuring you get the most out of your day without the overhead of complex enterprise software.
 
 ---
 
-## Core Logic
+## 🧠 Core Logic & Strategy
+MeetSync implements the **Greedy Activity Selection** algorithm, a proven mathematical approach to the Interval Scheduling Problem. 
 
-MeetSync follows the standard greedy strategy for interval scheduling.
+### **How It Works**
+1.  **Ingestion:** The system loads or accepts manual entry of meetings with defined `HH:MM` start and end times.
+2.  **Sorting:** Meetings are sorted based on their **earliest end time**.
+3.  **Selection:** The scheduler iterates through the sorted list, picking a meeting only if its start time is greater than or equal to the end time of the previously scheduled meeting.
+4.  **Conflict Resolution:** Any overlapping slots are automatically identified and rejected to maintain a clean, conflict-free timeline.
 
-### How It Works
-
-1. Load or add meetings with a start and end time.
-2. Sort meetings by earliest end time.
-3. Pick each meeting only if it does not overlap the last scheduled one.
-4. Reject overlapping meetings and show the conflict.
-
-### Why This Works
-
-- Earliest-ending meetings leave the most room for later meetings.
-- The result maximizes the number of meetings that can fit in a day.
-- The logic is easy to verify and easy to maintain.
+### **The Efficiency Factor**
+* **Optimal Throughput:** Selecting the earliest-ending meetings leaves the maximum possible remaining time for subsequent activities.
+* **Mathematical Proof:** This greedy strategy is guaranteed to provide the maximum number of non-overlapping activities for a single resource.
+* **Complexity:** The algorithm operates at $O(n \log n)$ due to the initial sorting requirement, while the selection process remains $O(n)$.
 
 ---
 
-## Key Features
-
-### Scheduler Workflow
-
-- Load sample data for a quick demo.
-- Add custom meetings with `HH:MM` start and end times.
-- View all saved meetings in a clean list.
-- Run the greedy scheduler and inspect accepted versus rejected slots.
-
-### Safety Checks
-
-- Reject meetings whose end time is not after the start time.
-- Prevent duplicate time-slot entries.
-- Handle empty schedules gracefully.
+## 🛠 Key Features
+* **Dynamic Entry:** Add custom meetings on the fly with built-in time validation.
+* **Sample Data Injection:** One-click loading of pre-defined datasets for rapid testing and demonstrations.
+* **Conflict Awareness:** Detailed reporting on why a specific meeting was rejected.
+* **Lightweight Footprint:** Zero dependencies beyond the C++ Standard Library, ensuring portability across macOS, Linux, and Windows.
 
 ---
 
-## Quickstart
+## 🚀 Technical Implementation
 
-### Build
+### **Safety Protocols**
+* **Temporal Validation:** Rejects any meeting where the `End Time <= Start Time`.
+* **Integrity Checks:** Prevents duplicate entries and handles empty states gracefully.
+* **Input Sanitization:** Ensures time formats remain consistent within the CLI environment to prevent runtime errors.
 
+### **Build & Execution**
+Ensure you have a C++17 compliant compiler (such as `g++` or `clang`).
+
+**1. Compilation**
 ```bash
 g++ -std=c++17 main.cpp -O2 -Wall -Wextra -o meetsync
 ```
 
-### Run
-
+**2. Execution**
 ```bash
 ./meetsync
 ```
 
-### Sample Flow
+---
 
-1. Choose `1` to load sample meetings.
-2. Choose `4` to run the greedy scheduler.
-3. Choose `5` to exit.
+## 📋 Sample Workflow
+1.  **Initialize:** Select `1` to populate the scheduler with sample data.
+2.  **Verify:** Select `3` to view the current raw list of all meetings.
+3.  **Optimize:** Select `4` to trigger the greedy scheduler and view the finalized, optimized agenda.
+4.  **Exit:** Select `5` to terminate the session safely.
 
 ---
 
-## Project Team
-
-- Vaibhav D
-- Srujan Kasturi
-- Ritin Nambiar
-- Ankit Choubey (Me)
-- Dhanush Dronagula
-
----
-
-## Notes
-
-- The project is intentionally small and self-contained.
-- Only the core files are kept in the repository.
-- The scheduler output is designed to be readable in a terminal.
+## 👥 Project Team
+* **Ankit Choubey** (Lead Developer)
+* **Vaibhav D**
+* **Srujan Kasturi**
+* **Ritin Nambiar**
+* **Dhanush Dronagula**
 
 ---
 
-<div align="center">
+## 📜 License & Notes
+* **License:** Distributed under the [MIT License](https://github.com/ankit-choubey/MeetSync/blob/main/LICENSE).
+* **Architecture:** The project is intentionally self-contained within `main.cpp` for maximum portability and ease of maintenance.
 
-*Built for practical scheduling, clean logic, and easy maintenance.*
-
-</div>
+*Built for performance. Optimized for impact.*
